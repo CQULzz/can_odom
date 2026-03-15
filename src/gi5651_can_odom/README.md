@@ -148,6 +148,43 @@ Notes:
 - `txt_path` must exist before startup, otherwise the node exits with a file-not-found error.
 - When editing YAML, keep string switches such as `txt_is: "on"` and `loop: "off"` quoted.
 
+## TXT -> GPS CSV
+
+If you already have a raw CAN TXT log and only want the GPS points inside it, use:
+
+```bash
+python3 /home/lzz/can_odom/tools/extract_gps_from_can_txt.py \
+  /tmp/replay_can.txt \
+  -o /tmp/replay_gps.csv
+```
+
+If you omit `-o`, the CSV is written to stdout:
+
+```bash
+python3 /home/lzz/can_odom/tools/extract_gps_from_can_txt.py /tmp/replay_can.txt
+```
+
+This tool expects the same `CANID#DATA` input format used by `TXT -> CAN`.
+
+Extraction rules:
+- Empty lines and lines starting with `#` are ignored.
+- Only CAN IDs `0x20B` and `0x21B` are treated as GPS position frames.
+- The payload must contain at least 8 bytes.
+- Bytes `0..3` are decoded as little-endian `int32 latitude * 1e-7`.
+- Bytes `4..7` are decoded as little-endian `int32 longitude * 1e-7`.
+
+CSV output columns:
+- `entry_index`: 1-based index of extracted GPS entries
+- `line_number`: original line number in the TXT file
+- `can_id`: source CAN ID, formatted like `0x20B`
+- `latitude_deg`: latitude in degrees
+- `longitude_deg`: longitude in degrees
+- `raw_payload`: original payload hex text
+
+Failure behavior:
+- Invalid `CANID#DATA` lines cause the tool to exit with an error.
+- If no `0x20B` or `0x21B` frames are found, the tool exits with a non-zero status.
+
 ## 厂商 USB-CAN 桥接到 `candump`
 
 有些 USB-CAN 设备不会在系统里生成原生 `can0`，只提供厂商自己的 `libusbcan.so`

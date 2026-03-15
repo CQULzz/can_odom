@@ -8,6 +8,7 @@
 - `CAN -> odom/TXT`：从 CAN 总线读取 GI5651 数据，解析后发布 `nav_msgs/msg/Odometry`
 - `CAN -> TXT`：把收到的 CAN 帧或 odom 结果保存成文本文件
 - `TXT -> CAN`：把文本中的 `CANID#DATA` 帧重新回放到 CAN 总线
+- `TXT -> GPS CSV`：从原始 CAN TXT 日志中提取经纬度帧，导出成 CSV
 
 此外，针对不提供原生 `SocketCAN can0` 的厂商 USB 转 CAN 设备，本工作区还提供：
 - `USB-CAN -> vcan0` 桥接
@@ -78,6 +79,22 @@ ros2 launch gi5651_can_odom txt_2can.launch.py \
   send_interval_sec:=0.01 \
   loop:=off
 ```
+
+TXT 提取 GPS：
+
+```bash
+python3 /home/lzz/can_odom/tools/extract_gps_from_can_txt.py \
+  /tmp/replay_can.txt \
+  -o /tmp/replay_gps.csv
+```
+
+这个工具会：
+- 读取 `CANID#DATA` 格式的原始 CAN TXT
+- 识别位置帧 `0x20B` 和 `0x21B`
+- 按小端 `int32` 解码前 8 字节中的纬度和经度
+- 输出 `entry_index,line_number,can_id,latitude_deg,longitude_deg,raw_payload` CSV
+
+如果不传 `-o`，CSV 会直接打印到标准输出。
 
 ## USB 转 CAN 设备说明
 
