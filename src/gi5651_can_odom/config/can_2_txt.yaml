@@ -1,0 +1,12 @@
+gi5651_can_odom:
+  ros__parameters:
+    can: "can0"
+    topic_name: "/odom"
+    frame_id: "odom"
+    child_frame_id: "base_link"
+    txt_path: "/home/lzz/can_odom/odom_txt"
+    txt_name: "auto"
+    txt_name_format: "%y%m%d%H%M%S.txt"
+    txt_is: "on"
+    txt_format: "can"
+    socket_timeout_sec: 0.2

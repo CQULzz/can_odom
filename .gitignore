@@ -1,0 +1,12 @@
+build/
+install/
+log/
+build_*/
+install_*/
+log_*/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+odom_txt/

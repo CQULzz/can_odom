@@ -1,0 +1,6 @@
+gi5651_txt_2_can:
+  ros__parameters:
+    can: "can0"
+    txt_path: "/home/lzz/can_odom/odom_txt/replay_can.txt"
+    send_interval_sec: 0.01
+    loop: "off"
